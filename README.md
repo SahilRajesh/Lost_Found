@@ -5,3 +5,4 @@ Steps to use these files:
 3. Copy and paste the files into project folder.
 4. Open eclipse.
 5. Run the mainPage.java file
+6. NOTE: Lost.jpg is for ImageIcon.
