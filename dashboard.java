@@ -3,94 +3,116 @@ package projectMain;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextPane;
+
 
 public class dashboard extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private final JLabel lblNewLabel = new JLabel("Dashboard");
+	private final JLabel headerLbl = new JLabel("Dashboard");
 	/**
 	 * @wbp.nonvisual location=157,-31
 	 */
 	
 	private mainPage parentFrame;
-	
 	public dashboard(mainPage parent) {
         this.parentFrame = parent;
+        
         initializePanel();
     }
-
 	/**
 	 * Create the panel.
 	 */
 	private void initializePanel() {
 		setLayout(new BorderLayout(0, 0));
 		
-		JPanel panel = new JPanel();
-		panel.setBackground(new Color(128, 0, 64));
-		add(panel, BorderLayout.NORTH);
-		lblNewLabel.setForeground(new Color(255, 255, 255));
-		lblNewLabel.setFont(new Font("Jokerman", Font.BOLD, 30));
-		panel.add(lblNewLabel);
+		JPanel headerPanel = new JPanel();
+		headerPanel.setBackground(new Color(128, 0, 64));
+		add(headerPanel, BorderLayout.NORTH);
+		headerLbl.setForeground(new Color(255, 255, 255));
+		headerLbl.setFont(new Font("Jokerman", Font.BOLD, 30));
+		headerPanel.add(headerLbl);
 		
-		JPanel panel_3 = new JPanel();
-		panel_3.setBackground(new Color(17, 170, 174));
-		add(panel_3, BorderLayout.CENTER);
-		panel_3.setLayout(null);
+		JPanel centerPanel = new JPanel();
+		centerPanel.setBackground(new Color(17, 170, 174));
+		add(centerPanel, BorderLayout.CENTER);
+		centerPanel.setLayout(null);
 		
-		JButton btnNewButton = new JButton("New Complaint");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton newComplainBtn = new JButton("New Complaint");
+		newComplainBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentFrame.showNewComplaintPanel();
 			}
 		});
-		btnNewButton.setForeground(new Color(255, 255, 255));
-		btnNewButton.setBackground(new Color(255, 0, 0));
-		btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		btnNewButton.setBounds(284, 40, 208, 60);
-		panel_3.add(btnNewButton);
+		newComplainBtn.setForeground(new Color(255, 255, 255));
+		newComplainBtn.setBackground(new Color(255, 0, 0));
+		newComplainBtn.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		newComplainBtn.setBounds(174, 154, 208, 60);
+		centerPanel.add(newComplainBtn);
 		
-		JButton btnViewStatus = new JButton("View Status");
-		btnViewStatus.addActionListener(new ActionListener() {
+		JButton viewStatusBtn = new JButton("View Status");
+		viewStatusBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentFrame.showStatusPanel();
 			}
 		});
-		btnViewStatus.setForeground(Color.WHITE);
-		btnViewStatus.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		btnViewStatus.setBackground(new Color(0, 0, 255));
-		btnViewStatus.setBounds(284, 111, 208, 60);
-		panel_3.add(btnViewStatus);
+		viewStatusBtn.setForeground(Color.WHITE);
+		viewStatusBtn.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		viewStatusBtn.setBackground(new Color(0, 0, 255));
+		viewStatusBtn.setBounds(416, 154, 208, 60);
+		centerPanel.add(viewStatusBtn);
 		
-		JButton btnViewAllComplaints = new JButton("View all complaints");
-		btnViewAllComplaints.setForeground(Color.WHITE);
-		btnViewAllComplaints.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		btnViewAllComplaints.setBackground(new Color(255, 156, 21));
-		btnViewAllComplaints.setBounds(284, 183, 208, 60);
-		panel_3.add(btnViewAllComplaints);
-		
-		JButton btnItemfound = new JButton("ItemFound?");
-		btnItemfound.setForeground(Color.WHITE);
-		btnItemfound.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		btnItemfound.setBackground(new Color(0, 185, 0));
-		btnItemfound.setBounds(284, 254, 208, 60);
-		panel_3.add(btnItemfound);
-		
-		JButton btnLogout = new JButton("Logout");
-		btnLogout.addActionListener(new ActionListener() {
+		JButton viewAllBtn = new JButton("View all complaints");
+		viewAllBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				parentFrame.showItemAllPanel();
+			}
+		});
+		viewAllBtn.setForeground(Color.WHITE);
+		viewAllBtn.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		viewAllBtn.setBackground(new Color(255, 156, 21));
+		viewAllBtn.setBounds(174, 225, 208, 60);
+		centerPanel.add(viewAllBtn);
+		
+		JButton itemFoundBtn = new JButton("ItemFound?");
+		itemFoundBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parentFrame.showFoundPanel();
+			}
+		});
+		itemFoundBtn.setForeground(Color.WHITE);
+		itemFoundBtn.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		itemFoundBtn.setBackground(new Color(0, 185, 0));
+		itemFoundBtn.setBounds(416, 225, 208, 60);
+		centerPanel.add(itemFoundBtn);
+		
+		JButton logoutBtn = new JButton("Logout");
+		logoutBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(dashboard.this, "Logout Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
 				parentFrame.showHomePanel();
 			}
 		});
-		btnLogout.setForeground(Color.WHITE);
-		btnLogout.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		btnLogout.setBackground(new Color(134, 0, 255));
-		btnLogout.setBounds(10, 11, 142, 45);
-		panel_3.add(btnLogout);
-
+		logoutBtn.setForeground(Color.WHITE);
+		logoutBtn.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		logoutBtn.setBackground(new Color(134, 0, 255));
+		logoutBtn.setBounds(10, 11, 142, 45);
+		centerPanel.add(logoutBtn);
+		
+		JTextPane welcomePane = new JTextPane();
+		welcomePane.setForeground(new Color(255, 255, 255));
+		welcomePane.setBackground(new Color(0, 128, 128));
+		welcomePane.setEditable(false);
+		welcomePane.setFont(new Font("Times New Roman", Font.BOLD, 35));
+		welcomePane.setText("WELCOME");
+		welcomePane.setBounds(296, 76, 197, 48);
+		centerPanel.add(welcomePane);
 	}
 }
