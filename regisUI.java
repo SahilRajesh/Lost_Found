@@ -2,143 +2,166 @@ package projectMain;
 
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class regisUI extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private mainPage parentFrame;
-    private JTextField textField_3;
-    private JTextField textField_4;
-    private JTextField textField;
+    private JTextField nameFld;
+    private JTextField phoneFld;
+    private JTextField usnFld;
+    private JComboBox<String> branchCbox;
+    private JRadioButton maleRadio;
+    private JRadioButton femaleRadio;
 
     public regisUI(mainPage parent) {
         this.parentFrame = parent;
         initializePanel();
     }
 
-    /**
-     * Create the panel.
-     */
     private void initializePanel() {
         setBackground(new Color(255, 51, 0));
         setLayout(null);
 
-        JPanel panel = new JPanel();
-        panel.setBackground(new Color(128, 0, 64));
-        panel.setBounds(0, 0, 800, 58);
-        add(panel);
-        panel.setLayout(null);
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(new Color(128, 0, 64));
+        headerPanel.setBounds(0, 0, 800, 58);
+        add(headerPanel);
+        headerPanel.setLayout(null);
 
-        JLabel lblNewLabel = new JLabel("Registration");
-        lblNewLabel.setForeground(Color.WHITE);
-        lblNewLabel.setFont(new Font("Jokerman", Font.BOLD, 30));
-        lblNewLabel.setBounds(270, 0, 218, 58);
-        panel.add(lblNewLabel);
+        JLabel headerLbl = new JLabel("Registration");
+        headerLbl.setForeground(Color.WHITE);
+        headerLbl.setFont(new Font("Jokerman", Font.BOLD, 30));
+        headerLbl.setBounds(270, 0, 218, 58);
+        headerPanel.add(headerLbl);
 
-        JPanel panel_1_1 = new JPanel();
-        panel_1_1.setLayout(null);
-        panel_1_1.setBackground(new Color(255, 153, 0));
-        panel_1_1.setBounds(189, 80, 379, 300);
-        add(panel_1_1);
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(null);
+        centerPanel.setBackground(new Color(255, 153, 0));
+        centerPanel.setBounds(189, 80, 379, 300);
+        add(centerPanel);
 
-        JLabel lblNewLabel_1_4 = new JLabel("Name");
-        lblNewLabel_1_4.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        lblNewLabel_1_4.setBounds(27, 26, 66, 24);
-        panel_1_1.add(lblNewLabel_1_4);
+        JLabel nameLbl = new JLabel("Name");
+        nameLbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        nameLbl.setBounds(27, 26, 66, 24);
+        centerPanel.add(nameLbl);
 
-        textField_3 = new JTextField();
-        textField_3.setToolTipText("Enter your name");
-        textField_3.setColumns(10);
-        textField_3.setBounds(126, 28, 168, 24);
-        panel_1_1.add(textField_3);
+        nameFld = new JTextField();
+        nameFld.setToolTipText("Enter your name");
+        nameFld.setColumns(10);
+        nameFld.setBounds(126, 28, 168, 24);
+        centerPanel.add(nameFld);
 
-        JLabel lblNewLabel_1_1_1 = new JLabel("Phone No");
-        lblNewLabel_1_1_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        lblNewLabel_1_1_1.setBounds(27, 174, 83, 24);
-        panel_1_1.add(lblNewLabel_1_1_1);
+        JLabel phoneLbl = new JLabel("Phone No");
+        phoneLbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        phoneLbl.setBounds(27, 174, 83, 24);
+        centerPanel.add(phoneLbl);
 
-        textField_4 = new JTextField();
-        textField_4.setToolTipText("Enter phone no");
-        textField_4.setColumns(10);
-        textField_4.setBounds(140, 174, 168, 24);
-        panel_1_1.add(textField_4);
+        phoneFld = new JTextField();
+        phoneFld.setToolTipText("Enter phone no");
+        phoneFld.setColumns(10);
+        phoneFld.setBounds(140, 174, 168, 24);
+        centerPanel.add(phoneFld);
 
-        JButton btnNewButton = new JButton("Register");
-        btnNewButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		parentFrame.showLoginPanel();
-        	}
+        JButton regisBtn = new JButton("Register");
+        regisBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String name = nameFld.getText();
+                String phone = phoneFld.getText();
+                String usn = usnFld.getText();
+                String branch = (String) branchCbox.getSelectedItem();
+                String gender = maleRadio.isSelected() ? "Male" : (femaleRadio.isSelected() ? "Female" : "");
+
+                // Simple validation
+                if (name.isEmpty() || phone.isEmpty() || usn.isEmpty() || gender.isEmpty()) {
+                    JOptionPane.showMessageDialog(regisUI.this, "Please fill all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Insert into database
+                Connection conn = parentFrame.connectDB();
+                String sql = "INSERT INTO users (name, phone, usn, branch, gender) VALUES (?, ?, ?, ?, ?)";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setString(1, name);
+                    stmt.setString(2, phone);
+                    stmt.setString(3, usn);
+                    stmt.setString(4, branch);
+                    stmt.setString(5, gender);
+                    int rows = stmt.executeUpdate();
+                    if (rows > 0) {
+                        JOptionPane.showMessageDialog(regisUI.this, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        parentFrame.showLoginPanel();
+                    } else {
+                        JOptionPane.showMessageDialog(regisUI.this, "Registration failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(regisUI.this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
-        btnNewButton.setForeground(new Color(255, 255, 255));
-        btnNewButton.setBackground(new Color(0, 0, 128));
-        btnNewButton.setFont(new Font("Times New Roman", Font.BOLD, 25));
-        btnNewButton.setBounds(126, 235, 145, 39);
-        panel_1_1.add(btnNewButton);
+        regisBtn.setForeground(new Color(255, 255, 255));
+        regisBtn.setBackground(new Color(0, 0, 128));
+        regisBtn.setFont(new Font("Times New Roman", Font.BOLD, 25));
+        regisBtn.setBounds(126, 235, 145, 39);
+        centerPanel.add(regisBtn);
 
-        JLabel lblNewLabel_1_2 = new JLabel("Branch");
-        lblNewLabel_1_2.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        lblNewLabel_1_2.setBounds(27, 61, 61, 24);
-        panel_1_1.add(lblNewLabel_1_2);
+        JLabel branchLbl = new JLabel("Branch");
+        branchLbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        branchLbl.setBounds(27, 61, 61, 24);
+        centerPanel.add(branchLbl);
 
-        JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.setModel(new DefaultComboBoxModel<>(new String[] {
-            "CSE", "ISE", "ECE", "EEE", "MECH", "CIVIL", "Other"
+        branchCbox = new JComboBox<>();
+        branchCbox.setModel(new DefaultComboBoxModel<>(new String[] {
+            "CSE", "ISE", "ECE", "MBA", "MTECH", "MCA", "Other"
         }));
-        comboBox.setToolTipText("Select your branch");
-        comboBox.setSelectedIndex(0);
-        comboBox.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        comboBox.setEditable(true);
-        comboBox.setBounds(124, 61, 184, 30);
-        panel_1_1.add(comboBox);
+        branchCbox.setToolTipText("Select your branch");
+        branchCbox.setSelectedIndex(0);
+        branchCbox.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        branchCbox.setEditable(true);
+        branchCbox.setBounds(124, 61, 184, 30);
+        centerPanel.add(branchCbox);
 
-        JLabel lblNewLabel_1_3 = new JLabel("USN");
-        lblNewLabel_1_3.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        lblNewLabel_1_3.setBounds(27, 104, 41, 24);
-        panel_1_1.add(lblNewLabel_1_3);
+        JLabel usnLbl = new JLabel("USN");
+        usnLbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        usnLbl.setBounds(27, 104, 41, 24);
+        centerPanel.add(usnLbl);
 
-        JLabel lblNewLabel_1_3_1 = new JLabel("Gender");
-        lblNewLabel_1_3_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
-        lblNewLabel_1_3_1.setBounds(27, 139, 63, 24);
-        panel_1_1.add(lblNewLabel_1_3_1);
+        JLabel genderLbl = new JLabel("Gender");
+        genderLbl.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        genderLbl.setBounds(27, 139, 63, 24);
+        centerPanel.add(genderLbl);
 
-        JRadioButton rdbtnNewRadioButton = new JRadioButton("Male");
-        rdbtnNewRadioButton.setBounds(142, 142, 61, 23);
-        panel_1_1.add(rdbtnNewRadioButton);
+        maleRadio = new JRadioButton("Male");
+        maleRadio.setBounds(142, 142, 61, 23);
+        centerPanel.add(maleRadio);
 
-        JRadioButton rdbtnFemale = new JRadioButton("Female");
-        rdbtnFemale.setBounds(210, 142, 75, 23);
-        panel_1_1.add(rdbtnFemale);
+        femaleRadio = new JRadioButton("Female");
+        femaleRadio.setBounds(210, 142, 75, 23);
+        centerPanel.add(femaleRadio);
 
-        // Add radio buttons to ButtonGroup
         ButtonGroup genderGroup = new ButtonGroup();
-        genderGroup.add(rdbtnNewRadioButton);
-        genderGroup.add(rdbtnFemale);
+        genderGroup.add(maleRadio);
+        genderGroup.add(femaleRadio);
 
-        textField = new JTextField();
-        textField.setToolTipText("Enter your USN");
-        textField.setColumns(10);
-        textField.setBounds(126, 108, 168, 24);
-        panel_1_1.add(textField);
-        
-                JButton btnNewButton_1 = new JButton("Go back home");
-                btnNewButton_1.setBounds(655, 69, 145, 31);
-                add(btnNewButton_1);
-                btnNewButton_1.setBackground(new Color(0, 255, 255));
-                btnNewButton_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        usnFld = new JTextField();
+        usnFld.setToolTipText("Enter your USN");
+        usnFld.setColumns(10);
+        usnFld.setBounds(126, 108, 168, 24);
+        centerPanel.add(usnFld);
 
-        btnNewButton_1.addActionListener(e -> {
-            // Show the home panel in mainPage
-            parentFrame.showHomePanel();
-        });
+        JButton homeBtn = new JButton("Go back home");
+        homeBtn.setBounds(655, 69, 145, 31);
+        add(homeBtn);
+        homeBtn.setBackground(new Color(0, 255, 255));
+        homeBtn.setFont(new Font("Times New Roman", Font.BOLD, 15));
+
+        homeBtn.addActionListener(e -> parentFrame.showHomePanel());
     }
 }
