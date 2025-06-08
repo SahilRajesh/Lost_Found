@@ -11,6 +11,11 @@ import java.awt.Color;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class mainPage {
 
@@ -21,6 +26,8 @@ public class mainPage {
     private static final String DASHBOARD_UI = "Dashboard";
     private static final String NEW_COMPLAINT_UI = "NewComplaint";
     private static final String STATUS_UI = "StatusPanel";
+    private static final String ITEM_ALL_UI = "ItemAll";
+    private static final String FOUND_UI = "FoundPanel";
 
     private CardLayout myCard;
     private loginUI logMe;
@@ -28,26 +35,79 @@ public class mainPage {
     private dashboard dashMe;
     private newComplaint newCom;
     private statusPanel statusMe;
+    private itemAll itemAllMe;
+    private foundUI foundMe; 
     
     private JPanel mainBasePan;
+
+    // JDBC variables
+    private Connection conn;
+    private final String DB_URL = "jdbc:mysql://localhost:3306/projectLost";
+    private final String DB_USER = "root";
+    private final String DB_PASS = "Your_database_password";
 
     public void showHomePanel() {
         myCard.show(mainBasePan, HOME_UI);
     }
     public void showRegistrationPanel() {
-		myCard.show(mainBasePan, REGIS_UI);
-	}
-    public void showDashboardPanel() {
-		myCard.show(mainBasePan, DASHBOARD_UI);
-	}
+        myCard.show(mainBasePan, REGIS_UI);
+    }
     public void showLoginPanel() {
-		myCard.show(mainBasePan, LOGIN_UI);
-	}
+        myCard.show(mainBasePan, LOGIN_UI);
+    }
+    public void showDashboardPanel() {
+        myCard.show(mainBasePan, DASHBOARD_UI);
+    }
+    
     public void showNewComplaintPanel() {
-    	myCard.show(mainBasePan, NEW_COMPLAINT_UI);
+        myCard.show(mainBasePan, NEW_COMPLAINT_UI);
     }
     public void showStatusPanel() {
-    	myCard.show(mainBasePan, STATUS_UI);
+        myCard.show(mainBasePan, STATUS_UI);
+    }
+    public void showItemAllPanel() {
+        myCard.show(mainBasePan, ITEM_ALL_UI);
+    }
+    public void showFoundPanel() {
+        myCard.show(mainBasePan, FOUND_UI);
+    }
+
+    // JDBC connect method
+    public Connection connectDB() {
+        try {
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            System.out.println("Database connected!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		return conn;
+    }
+    
+    public boolean authenticateUser(String name, String usn) {
+        String sql = "SELECT * FROM users WHERE BINARY name = ? AND BINARY usn = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, usn);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // true if user exists
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    // JDBC close method
+    public void closeDB() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                System.out.println("Database connection closed.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
@@ -62,7 +122,10 @@ public class mainPage {
     }
 
     public mainPage() {
+        connectDB();
         initialize();
+        // Optionally, add a shutdown hook to close DB on exit
+        Runtime.getRuntime().addShutdownHook(new Thread(this::closeDB));
     }
 
     public void initialize() {
@@ -84,23 +147,23 @@ public class mainPage {
         mainBodyPan.setBackground(new Color(0, 128, 128));
         mainBodyPan.setLayout(null);
 
-        JTextPane txtpnWelcomeToLost = new JTextPane();
-        txtpnWelcomeToLost.setText("Welcome to Lost and Found Portal");
-        txtpnWelcomeToLost.setForeground(Color.YELLOW);
-        txtpnWelcomeToLost.setFont(new Font("Lucida Handwriting", Font.BOLD, 20));
-        txtpnWelcomeToLost.setEditable(false);
-        txtpnWelcomeToLost.setBackground(new Color(255, 0, 128));
-        txtpnWelcomeToLost.setBounds(221, 53, 347, 77);
-        mainBodyPan.add(txtpnWelcomeToLost);
+        JTextPane firstTxtPane = new JTextPane();
+        firstTxtPane.setText("Welcome to Lost and Found Portal");
+        firstTxtPane.setForeground(Color.YELLOW);
+        firstTxtPane.setFont(new Font("Lucida Handwriting", Font.BOLD, 20));
+        firstTxtPane.setEditable(false);
+        firstTxtPane.setBackground(new Color(255, 0, 128));
+        firstTxtPane.setBounds(221, 53, 347, 77);
+        mainBodyPan.add(firstTxtPane);
 
-        JTextPane txtpnHereYouCan = new JTextPane();
-        txtpnHereYouCan.setText("Here, you can report for missing items or found items");
-        txtpnHereYouCan.setForeground(Color.YELLOW);
-        txtpnHereYouCan.setFont(new Font("Lucida Handwriting", Font.BOLD, 20));
-        txtpnHereYouCan.setEditable(false);
-        txtpnHereYouCan.setBackground(new Color(255, 0, 128));
-        txtpnHereYouCan.setBounds(209, 153, 370, 77);
-        mainBodyPan.add(txtpnHereYouCan);
+        JTextPane secondTxtPane = new JTextPane();
+        secondTxtPane.setText("Here, you can report for missing items or found items");
+        secondTxtPane.setForeground(Color.YELLOW);
+        secondTxtPane.setFont(new Font("Lucida Handwriting", Font.BOLD, 20));
+        secondTxtPane.setEditable(false);
+        secondTxtPane.setBackground(new Color(255, 0, 128));
+        secondTxtPane.setBounds(209, 153, 370, 77);
+        mainBodyPan.add(secondTxtPane);
 
         JButton btnLogin = new JButton("Login");
         btnLogin.addActionListener(e -> myCard.show(mainBasePan, LOGIN_UI));
@@ -124,6 +187,8 @@ public class mainPage {
         dashMe = new dashboard(this);
         newCom = new newComplaint(this);
         statusMe = new statusPanel(this);
+        itemAllMe = new itemAll(this);
+        foundMe = new foundUI(this); 
 
         // Add panels to CardLayout
         mainBasePan.add(mainBodyPan, HOME_UI);
@@ -132,28 +197,33 @@ public class mainPage {
         mainBasePan.add(dashMe, DASHBOARD_UI);
         mainBasePan.add(newCom, NEW_COMPLAINT_UI);
         mainBasePan.add(statusMe, STATUS_UI);
+        mainBasePan.add(itemAllMe, ITEM_ALL_UI);
+        mainBasePan.add(foundMe, FOUND_UI); 
 
         mainFrame.getContentPane().add(mainBasePan, BorderLayout.CENTER);
 
         // Header
         JPanel mainHeaderPan = new JPanel();
         mainHeaderPan.setBackground(new Color(255, 0, 128));
-        JLabel lblNewLabel = new JLabel("Lost and Found");
-        lblNewLabel.setForeground(new Color(255, 255, 255));
-        lblNewLabel.setFont(new Font("Jokerman", Font.BOLD, 40));
-        mainHeaderPan.add(lblNewLabel);
+        JLabel headerLbl = new JLabel("Lost and Found");
+        headerLbl.setForeground(new Color(255, 255, 255));
+        headerLbl.setFont(new Font("Jokerman", Font.BOLD, 40));
+        mainHeaderPan.add(headerLbl);
         mainFrame.getContentPane().add(mainHeaderPan, BorderLayout.NORTH);
 
         // Footer
         JPanel mainFooterPan = new JPanel();
         mainFooterPan.setBackground(new Color(0, 0, 0));
-        JLabel lblNewLabel_1 = new JLabel("All Rights Reserved. NHCE Project 2025 ©");
-        lblNewLabel_1.setForeground(new Color(255, 255, 255));
-        lblNewLabel_1.setFont(new Font("Times New Roman", Font.PLAIN, 12));
-        mainFooterPan.add(lblNewLabel_1);
+        JLabel footerLbl = new JLabel("All Rights Reserved. NHCE Project 2025 ©");
+        footerLbl.setForeground(new Color(255, 255, 255));
+        footerLbl.setFont(new Font("Times New Roman", Font.PLAIN, 12));
+        mainFooterPan.add(footerLbl);
         mainFrame.getContentPane().add(mainFooterPan, BorderLayout.SOUTH);
 
         // Show home panel by default
         myCard.show(mainBasePan, HOME_UI);
     }
+	
+   
+
 }
