@@ -44,7 +44,7 @@ public class mainPage {
     private Connection conn;
     private final String DB_URL = "jdbc:mysql://localhost:3306/projectLost";
     private final String DB_USER = "root";
-    private final String DB_PASS = "1011";
+    private final String DB_PASS = "Your_Database_Password";
 
     public void showHomePanel() {
         myCard.show(mainBasePan, HOME_UI);
