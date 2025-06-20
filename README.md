@@ -10,7 +10,7 @@ Steps to use these files:
 7. All the SQL queries done so far...
 8. Create database projectLost;
 9. use projectLost;
-10.CREATE TABLE users (
+   CREATE TABLE users (
     name VARCHAR(100),
     phone VARCHAR(20),
     usn VARCHAR(30),
@@ -18,13 +18,13 @@ Steps to use these files:
     gender VARCHAR(10)
 );
 
-11.CREATE TABLE admins(
-		id int auto_increment primary key,
+CREATE TABLE admins(
+	id int auto_increment primary key,
         name varchar(50),
         usn varchar(50)
 );
 
-12.CREATE TABLE item_complaint (
+CREATE TABLE item_complaint (
     id INT PRIMARY KEY AUTO_INCREMENT,
     category VARCHAR(50) NOT NULL,
     complaint TEXT NOT NULL,
@@ -33,11 +33,11 @@ Steps to use these files:
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-13.CREATE TABLE item_history (
+CREATE TABLE item_history (
 	id int auto_increment primary key,
     category varchar(50),
     isFound boolean default False
 );
 
-14.INSERT INTO admins(name,usn)
+INSERT INTO admins(name,usn)
     VALUES("Sahil","112"),("Ranjitha","106");
