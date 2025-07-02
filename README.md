@@ -10,7 +10,8 @@ Steps to use these files:
 7. All the SQL queries done so far...
 8. Create database projectLost;
 9. use projectLost;
-   CREATE TABLE users (
+
+CREATE TABLE users (
     name VARCHAR(100),
     phone VARCHAR(20),
     usn VARCHAR(30),
@@ -35,9 +36,12 @@ CREATE TABLE item_complaint (
 
 CREATE TABLE item_history (
 	id int auto_increment primary key,
-    category varchar(50),
-    isFound boolean default False
-);
+	category varchar(50),
+	complaint varchar(200),
+	isFound boolean default False
+ );
 
 INSERT INTO admins(name,usn)
     VALUES("Sahil","112"),("Ranjitha","106");
+
+NOTE: item_history table has been updated with another column "complaint". 
